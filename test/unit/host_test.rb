@@ -2186,6 +2186,14 @@ class HostTest < ActiveSupport::TestCase
 
     test 'clone host should not copy name, system fields (mac, ip, etc)' do
       host = FactoryGirl.create(:host, :with_config_group, :with_puppetclass, :with_parameter)
+
+      # If those are blank, then this test has no value
+      refute host.name.blank?
+      refute host.mac.blank?
+      refute host.ip.blank?
+      refute host.uuid.blank?
+      refute host.certname.blank?
+      refute host.last_report.blank?
       copy = host.clone
       assert copy.name.blank?
       assert copy.mac.blank?
@@ -2197,14 +2205,21 @@ class HostTest < ActiveSupport::TestCase
 
     test 'clone host should copy interfaces without name, mac and ip' do
       host = FactoryGirl.create(:host, :with_config_group, :with_puppetclass, :with_parameter)
+
+      # If those are blank, then this test has no value
+      interface = host.interfaces.first
+      refute interface.name.blank?
+      refute interface.mac.blank?
+      refute interface.ip.blank?
+
       copy = host.clone
 
       assert_equal host.interfaces.length, copy.interfaces.length
 
-      interface = copy.interfaces.first
-      assert interface.name.blank?
-      assert interface.mac.blank?
-      assert interface.ip.blank?
+      copy_interface = copy.interfaces.first
+      assert copy_interface.name.blank?
+      assert copy_interface.mac.blank?
+      assert copy_interface.ip.blank?
     end
 
     test 'without save makes no changes' do
